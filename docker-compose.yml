@@ -2,20 +2,19 @@ version: '3.7'
 services:
   wallet_web_api:
     container_name: wallet_web_api
-    image: 'kachezwe_api:v1'
+    image: 'wallet_web_api:v1'
     tty: true
-    build:
-      context: .
+    build: ./backend
     command: 'gunicorn --bind 0.0.0.0:5000  -c src/gunicorn.conf.py "wsgi:create_app(''production'')"'
     env_file:
       - .env
     restart: always
     volumes:
-      - './src:/app/src'
+      - ./backend/src:/app/src
     networks:
-      - kachezwe_network
+      - wallet_network
     depends_on:
-      - kachezwe_web_db
+      - wallet_web_db
     expose:
       - '5000'
 
@@ -33,8 +32,8 @@ services:
       - wallet_network
 
   wallet_nginx:
-    container_name: kachezwe_nginx
-    build: ./docker/nginx
+    container_name: wallet_nginx
+    build: ./nginx
     ports:
       - '1337:80'
     depends_on:
