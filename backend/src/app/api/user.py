@@ -40,12 +40,11 @@ class User(Resource):
         if user:
             role_object = RolesModel().find_by_role_id(user.role_id)
             return {
-                "user_id": user.entity_id,
-                "first_name": user.first_name,
-                "last_name": user.last_name,
+                "user_id": user.id,
+                "name": user.name,
                 "email": user.email,
                 "telephone": user.telephone,
-                "gender": user.gender,
+                "profile_photo": user.profile_photo,
                 "last_login_date": user.last_login_date,
                 "role": role_object.name,
                 "is_disabled": user.is_disabled,
@@ -68,11 +67,10 @@ class User(Resource):
             abort(400, str(validation_errors))
 
         password = request_body.get("password")
-        first_name = request_body.get("first_name")
-        last_name = request_body.get("last_name")
-        gender = request_body.get("gender")
+        name = request_body.get("name")
         email = request_body.get("email")
         telephone = request_body.get("telephone")
+        profile_photo = request_body.get("profile_photo")
         role_id = request_body.get("role_id")
 
         if UserModel.find_by_username(email):
@@ -81,11 +79,10 @@ class User(Resource):
         # create new user
         new_user = UserModel(
             password=UserModel.generate_hash(password),
-            first_name=first_name,
-            last_name=last_name,
+            name=name,
             email=email,
             telephone=telephone,
-            gender=gender,
+            profile_photo=profile_photo,
             is_disabled=False,
             role_id=role_id,
         )
@@ -121,10 +118,9 @@ class User(Resource):
         # request body
         email = request_body.get("email")
         password = request_body.get("password")
-        first_name = request_body.get("first_name")
-        last_name = request_body.get("last_name")
+        name = request_body.get("name")
         telephone = request_body.get("telephone")
-        gender = request_body.get("gender")
+        profile_photo = request_body.get("profile_photo")
         role_id = request_body.get("role_id")
         is_disabled = request_body.get("is_disabled")
 
@@ -137,10 +133,9 @@ class User(Resource):
 
         try:
             if user:
-                user.first_name = first_name
-                user.last_name = last_name
+                user.name = name
                 user.email = email
-                user.gender = gender
+                user.profile_photo = profile_photo
                 user.telephone = telephone
                 user.password = UserModel.generate_hash(password)
                 user.updated_at = datetime.utcnow()
@@ -209,12 +204,11 @@ class Users(Resource):
             for user_object in user_items:
                 new_user_object = dict()
                 role_object = RolesModel().find_by_role_id(user_object.role_id)
-                new_user_object["user_id"] = user_object.entity_id
-                new_user_object["first_name"] = user_object.first_name
-                new_user_object["last_name"] = user_object.last_name
+                new_user_object["user_id"] = user_object.id
+                new_user_object["name"] = user_object.name
                 new_user_object["email"] = user_object.email
                 new_user_object["telephone"] = user_object.telephone
-                new_user_object["gender"] = user_object.gender
+                new_user_object["profile_photo"] = user_object.profile_photo
                 new_user_object["role"] = role_object.name
                 new_user_object["is_disabled"] = user_object.is_disabled
                 new_users.append(new_user_object)

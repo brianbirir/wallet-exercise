@@ -7,19 +7,18 @@ class UserRequestSchema(Schema):
 
 
 class UserRegistrationRequestSchema(Schema):
-    username = fields.String(required=True)
-    first_name = fields.String(required=True)
-    last_name = fields.String(required=True)
+    email = fields.String(required=True)
+    name = fields.String(required=True)
     password = fields.String(required=True)
     telephone = fields.String(required=True)
-    gender = fields.String(required=True)
+    profile_photo = fields.String(required=True)
     role_id = fields.Number(required=True)
 
 
 class UserPutRequestSchema(Schema):
-    username = fields.String(required=True)
-    first_name = fields.String(required=True)
-    last_name = fields.String(required=True)
+    email = fields.String(required=True)
+    name = fields.String(required=True)
+    profile_photo = fields.String(required=True)
     password = fields.String(required=True)
     telephone = fields.String(required=True)
     role_id = fields.Number(required=True)
@@ -27,7 +26,7 @@ class UserPutRequestSchema(Schema):
 
 
 class UserLoginRequestSchema(Schema):
-    username = fields.String(required=True)
+    email = fields.String(required=True)
     password = fields.String(required=True)
 
 

@@ -34,35 +34,33 @@ class UserRegistration(Resource):
         if validation_errors:
             abort(400, str(validation_errors))
 
-        username = request_body.get("username")
+        email = request_body.get("email")
         password = request_body.get("password")
-        first_name = request_body.get("first_name")
-        last_name = request_body.get("last_name")
+        name = request_body.get("name")
         telephone = request_body.get("telephone")
         role_id = request_body.get("role_id")
-        gender = request_body.get("gender")
+        profile_photo = request_body.get("profile_photo")
 
-        if UserModel.find_by_username(username):
-            return {"message": f"User {username} already exists"}, 409
+        if UserModel.find_by_username(email):
+            return {"message": f"User {email} already exists"}, 409
 
         # create new user
         new_user = UserModel(
-            email=username,
+            email=email,
             password=UserModel.generate_hash(password),
-            first_name=first_name,
-            last_name=last_name,
+            name=name,
             telephone=telephone,
+            profile_photo=profile_photo,
             is_disabled=False,  # user is not disabled on initial registration
             role_id=role_id,
-            gender=gender,
         )
 
         try:
             new_user.save_to_db()
-            access_token = create_access_token(identity=username)
-            refresh_token = create_refresh_token(identity=username)
+            access_token = create_access_token(identity=email)
+            refresh_token = create_refresh_token(identity=email)
             return {
-                "message": f"User {username} was created",
+                "message": f"User {email} was created",
                 "access_token": access_token,
                 "refresh_token": refresh_token,
                 "user_id": new_user.entity_id,
@@ -88,28 +86,28 @@ class UserLogin(Resource):
         if validation_errors:
             abort(400, str(validation_errors))
 
-        user = request_body["username"]
+        email = request_body["email"]
         password = request_body["password"]
 
         # search by user by username
-        current_user = UserModel.find_by_username(user)
+        current_user = UserModel.find_by_username(email)
 
         if not current_user:
-            return {"message": f"User {user} does not exist!"}, 404
+            return {"message": f"User {email} does not exist!"}, 404
 
         # compare request password and hash
         if UserModel.verify_hash(password, current_user.password):
             # get role object
             role_object = RolesModel().find_by_role_id(current_user.role_id)
-            access_token = create_access_token(identity=user, expires_delta=False)
-            refresh_token = create_refresh_token(identity=user)
+            access_token = create_access_token(identity=email, expires_delta=False)
+            refresh_token = create_refresh_token(identity=email)
             return {
-                "message": f"Logged in as {current_user.first_name} {current_user.last_name}",
+                "message": f"Logged in as {current_user.name}",
                 "access_token": access_token,
                 "refresh_token": refresh_token,
-                "name": f"{current_user.first_name} {current_user.last_name}",
-                "username": f"{current_user.email}",
-                "user_id": f"{current_user.entity_id}",
+                "name": f"{current_user.name}",
+                "email": f"{current_user.email}",
+                "user_id": f"{current_user.id}",
                 "role_name": role_object.name,
             }, 200
         else:
