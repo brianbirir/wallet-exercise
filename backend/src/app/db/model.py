@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from passlib.hash import pbkdf2_sha256
-from sqlalchemy import Column
 
 from src.extensions import db
 
@@ -34,7 +33,7 @@ class BaseModel(db.Model):
 class RolesModel(BaseModel):
     """Generates roles table"""
 
-    __tablename__ = "Roles"
+    __tablename__ = "roles"
     name = db.Column(db.String(128), nullable=False)
     users = db.relationship("UserModel", backref="roles", lazy=True)
 
@@ -73,15 +72,17 @@ class RolesModel(BaseModel):
 class UserModel(BaseModel):
     """Generates user table"""
 
-    __tablename__ = "Users"
+    __tablename__ = "users"
     name = db.Column(db.String(40), nullable=False)
     email = db.Column(db.String(40), nullable=False, unique=True)
     telephone = db.Column(db.String(40), nullable=True)
-    password = db.Column(db.String(40), nullable=False)
-    profile_photo = db.Column(db.String(128), nullable=True)
+    password = db.Column(db.String(), nullable=False)
+    profile_photo = db.Column(db.String(), nullable=True)
     is_disabled = db.Column(db.Boolean, nullable=False, default=False)
     last_login_date = db.Column(db.DateTime, nullable=True, default=datetime.utcnow())
-    role_id = db.Column(db.Integer, db.ForeignKey("Roles.id"), nullable=False)
+    role_id = db.Column(db.Integer, db.ForeignKey("roles.id"), nullable=False)
+    wallet = db.relationship("WalletModel", uselist=False, backref="users", lazy=True)
+    transactions = db.relationship("TransactionsModel", backref="users", lazy=True)
 
     def __repr__(self):
         return "<name: {} >".format(self.name)
@@ -115,7 +116,7 @@ class UserModel(BaseModel):
 class RevokedTokenModel(BaseModel):
     """Generates revoked token table"""
 
-    __tablename__ = "RevokedToken"
+    __tablename__ = "revoked_token"
     revoked_token = db.Column(db.String(120))
 
     def __repr__(self):
@@ -125,3 +126,38 @@ class RevokedTokenModel(BaseModel):
     def is_token_blacklisted(cls, token):
         query = cls.query.filter_by(revoked_token=str(token)).first()
         return bool(query)
+
+
+class CurrencyModel(BaseModel):
+    """Currency table representation"""
+
+    __tablename__ = "currency"
+    currency_code = db.Column(db.String(3), nullable=False, unique=True)
+    currency_name = db.Column(db.String(40), nullable=False)
+    wallet = db.relationship("WalletModel", uselist=False, backref="currency")
+
+
+class WalletModel(BaseModel):
+    """Wallet table representation"""
+
+    __tablename__ = "wallet"
+    amount = db.Column(
+        db.Numeric(asdecimal=True, precision=8, decimal_return_scale=2),
+        nullable=False,
+        default=0.00,
+    )
+    currency_id = db.Column(db.Integer, db.ForeignKey("currency.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+
+class TransactionsModel(BaseModel):
+    """Transactions table representation"""
+
+    __tablename__ = "transactions"
+    transaction_type = db.Column(db.String(40), nullable=False)
+    amount = db.Column(
+        db.Numeric(asdecimal=True, precision=8, decimal_return_scale=2),
+        nullable=False,
+        default=0.00,
+    )
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
