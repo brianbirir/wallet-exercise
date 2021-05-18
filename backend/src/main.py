@@ -14,6 +14,7 @@ from src.app.api.user import ns_user
 from src.app.api.auth import ns_auth
 from src.app.api.role import ns_role
 from src.config import config, Config
+from src.helpers.currency_converter import CurrencyConverter
 
 
 def create_app(config_name="default"):
@@ -46,7 +47,7 @@ def create_app(config_name="default"):
     app.register_blueprint(api_blueprint_v1)
 
     # seed database with roles
-    @app.cli.command("db_seed")
+    @app.cli.command("db_seed_roles")
     def seed_roles_table():
         if models.RolesModel.check_for_roles():
             print("Role table has seeded data. No need to seed!")
@@ -80,6 +81,28 @@ def create_app(config_name="default"):
             print("Users table has been seeded successfully with default user")
         except Exception as e:
             print(f"Failure in seeding users table with default user: {str(e)}")
+
+    @app.cli.command("db_seed_currency")
+    def seed_currency_table():
+        try:
+            currency_object = CurrencyConverter(
+                url=Config.FIXER_BASE_URL, api_key=Config.FIXER_API_KEY
+            )
+            response = currency_object.fetch_currency_symbols()
+            # print(response)
+            currency_symbols = response["symbols"]
+
+            print(currency_symbols)
+
+            for key, value in currency_symbols.items():
+                currency_item = models.CurrencyModel(
+                    currency_code=key, currency_name=value
+                )
+                db.session.add(currency_item)
+                db.session.commit()
+                print(f"Currency {key}, {value} has been saved successfully!")
+        except Exception as e:
+            print(f"Failure in seeding currency table: {str(e)}")
 
     # check if token is revoked
     @jwt.token_in_blocklist_loader

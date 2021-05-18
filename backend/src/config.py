@@ -16,6 +16,8 @@ class Config:
     JWT_BLACKLIST_ENABLED = os.getenv("JWT_BLACKLIST_ENABLED")
     JWT_BLACKLIST_TOKEN_CHECKS = ["access", "refresh"]
     DEFAULT_USER_PASSWORD = os.environ.get("DEFAULT_USER_PASSWORD")
+    FIXER_API_KEY = os.environ.get("FIXER_API_KEY")
+    FIXER_BASE_URL = os.environ.get("FIXER_BASE_URL")
 
 
 class ProductionConfig(Config):
