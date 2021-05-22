@@ -1,4 +1,4 @@
-FROM python:3.9.5-buster
+FROM python:3.7-buster
 
 # set environment variables
 ENV PYTHONUNBUFFERED 1
