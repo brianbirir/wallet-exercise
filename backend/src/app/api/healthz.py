@@ -8,5 +8,6 @@ class Healthz(Resource):
     """Healthz checks if API service is running"""
 
     @ns_healthz.response(200, "API service is up and running")
+    @ns_healthz.response(500, "API service is not running")
     def get(self):
         return {"message": "API service is up and running"}, 200
