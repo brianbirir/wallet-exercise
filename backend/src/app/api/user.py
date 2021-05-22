@@ -6,21 +6,21 @@ from flask_jwt_extended import jwt_required
 
 from src.utils import pagination
 from src.app.db.model import UserModel, RolesModel
-from src.app.schema.serializer import user_post_request, user
+from src.app.schema.serializer import user_post_request, user, user_get_request
 from src.app.schema.request_schema import (
     UserRequestSchema,
     UserRegistrationRequestSchema,
     UserPutRequestSchema,
 )
 
-ns_user = Namespace("user", description="User resource")
+ns_user = Namespace("users", description="User resource")
 
 
 @ns_user.route("")
 class User(Resource):
     """The user resource"""
 
-    @jwt_required
+    @jwt_required()
     @ns_user.marshal_with(user)
     @ns_user.response(200, "User details returned successfully")
     @ns_user.response(400, "Bad request")
@@ -52,7 +52,7 @@ class User(Resource):
         else:
             abort(404, "User does not exist")
 
-    @jwt_required
+    @jwt_required()
     @ns_user.expect(user_post_request)
     @ns_user.response(200, "User was added successfully")
     @ns_user.response(400, "Bad request")
@@ -95,7 +95,7 @@ class User(Resource):
         except Exception as e:
             return {"message": f"something went wrong: {str(e)}"}, 500
 
-    @jwt_required
+    @jwt_required()
     @ns_user.expect(user_post_request)
     @ns_user.param("user_id", "ID of the user")
     @ns_user.response(200, "User updated successfully")
@@ -148,7 +148,7 @@ class User(Resource):
         except Exception as e:
             return {"message": f"something went wrong: {str(e)}"}, 500
 
-    @jwt_required
+    @jwt_required()
     @ns_user.response(200, "User deleted successfully")
     @ns_user.response(400, "Bad request")
     @ns_user.response(404, "User not found")
@@ -178,7 +178,7 @@ class User(Resource):
 class Users(Resource):
     """The users resource"""
 
-    @jwt_required
+    @jwt_required()
     @ns_user.marshal_with(user, as_list=True)
     @ns_user.response(200, "Users returned successfully")
     @ns_user.response(400, "Bad request")
