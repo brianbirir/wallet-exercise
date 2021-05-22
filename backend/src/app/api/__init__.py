@@ -16,7 +16,7 @@ api = Api(
 
 @api.errorhandler
 def default_error_handler(err):
-    message = "An unhandled exception occurred: {}".format(err)
+    message = f"An unhandled exception occurred: {format(err)}"
     # Flask fully logs this exception, so we don't have to
     # log.exception(message)
     return {"message": message}, 500
