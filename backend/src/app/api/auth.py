@@ -63,7 +63,7 @@ class UserRegistration(Resource):
                 "message": f"User {email} was created",
                 "access_token": access_token,
                 "refresh_token": refresh_token,
-                "user_id": new_user.entity_id,
+                "user_id": new_user.id,
             }, 200
         except Exception as e:
             return {"message": f"something went wrong: {str(e)}"}, 500
@@ -118,7 +118,7 @@ class UserLogin(Resource):
 class UserLogoutAccess(Resource):
     """User logout to revoke access token"""
 
-    @jwt_required
+    @jwt_required()
     @ns_auth.response(200, "Access token has been revoked")
     @ns_auth.response(500, "Something went wrong")
     @ns_auth.response(400, "No JWT provided")

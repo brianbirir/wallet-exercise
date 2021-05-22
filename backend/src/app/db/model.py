@@ -48,7 +48,7 @@ class RolesModel(BaseModel):
     @classmethod
     def find_by_role_id(cls, role_id):
         """Returns user by role id"""
-        return cls.query.filter_by(entity_id=role_id).first()
+        return cls.query.filter_by(id=role_id).first()
 
     @classmethod
     def find_by_name(cls, role_name):

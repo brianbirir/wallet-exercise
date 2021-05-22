@@ -156,7 +156,7 @@ class Users(Resource):
             new_role = []
             for role_object in role_items:
                 new_role_object = dict()
-                new_role_object["role_id"] = role_object.entity_id
+                new_role_object["role_id"] = role_object.id
                 new_role_object["role_name"] = role_object.name
                 new_role.append(new_role_object)
             return new_role, 200
