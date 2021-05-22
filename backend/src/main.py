@@ -13,6 +13,7 @@ from src.app.api.healthz import ns_healthz
 from src.app.api.user import ns_user
 from src.app.api.auth import ns_auth
 from src.app.api.role import ns_role
+from src.app.api.transactions import ns_transaction
 from src.config import config, Config
 from src.helpers.currency_converter import CurrencyConverter
 
@@ -43,6 +44,7 @@ def create_app(config_name="default"):
     api.add_namespace(ns_user)
     api.add_namespace(ns_role)
     api.add_namespace(ns_auth)
+    api.add_namespace(ns_transaction)
 
     app.register_blueprint(api_blueprint_v1)
 

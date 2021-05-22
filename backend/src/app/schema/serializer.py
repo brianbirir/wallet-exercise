@@ -56,9 +56,7 @@ user_post_request = api.model(
     "PostUserRequestSchema",
     {
         "name": fields.String(description="Name of the user"),
-        "username": fields.String(
-            description="username of the user as an email address"
-        ),
+        "email": fields.String(description="username of the user as an email address"),
         "password": fields.String(description="Password"),
         "profile_photo": fields.String(
             description="Source link for the user's profile photo"
@@ -74,5 +72,13 @@ user_login_request = api.model(
     {
         "email": fields.String(description="Email address of the user"),
         "password": fields.String(description="Password"),
+    },
+)
+
+wallet = api.model(
+    "WalletSchema",
+    {
+        "amount": fields.Float(description="Amount in the wallet"),
+        "currency": fields.String(description="Current currency"),
     },
 )

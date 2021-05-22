@@ -136,6 +136,11 @@ class CurrencyModel(BaseModel):
     currency_name = db.Column(db.String(40), nullable=False)
     wallet = db.relationship("WalletModel", uselist=False, backref="currency")
 
+    @classmethod
+    def find_by_currency_id(cls, currency_id):
+        """Returns currency by currency id"""
+        return cls.query.filter_by(id=currency_id).first()
+
 
 class WalletModel(BaseModel):
     """Wallet table representation"""
@@ -148,6 +153,16 @@ class WalletModel(BaseModel):
     )
     currency_id = db.Column(db.Integer, db.ForeignKey("currency.id"), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+    @classmethod
+    def find_by_user_id(cls, user_id):
+        """Returns wallet by user id"""
+        return (
+            db.session.query(cls, CurrencyModel)
+            .filter_by(user_id=user_id)
+            .join(CurrencyModel, cls.currency_id == CurrencyModel.id)
+            .first()
+        )
 
 
 class TransactionsModel(BaseModel):

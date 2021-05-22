@@ -5,9 +5,9 @@ from flask_restx import Namespace, Resource
 from flask_jwt_extended import jwt_required
 
 from src.utils import pagination
-from src.app.db.model import UserModel, RolesModel
+from src.app.db.model import UserModel, RolesModel, WalletModel
 from src.app.schema.serializer import user_post_request, user, user_get_request
-from src.app.schema.request_schema import (
+from src.app.schema.validation_schema import (
     UserRequestSchema,
     UserRegistrationRequestSchema,
     UserPutRequestSchema,
@@ -89,6 +89,8 @@ class User(Resource):
 
         try:
             new_user.save_to_db()
+            new_wallet = WalletModel(amount=0.00, currency_id=150, user_id=new_user.id)
+            new_wallet.save_to_db()
             return {
                 "message": f"User {email} was created successfully",
             }, 200
