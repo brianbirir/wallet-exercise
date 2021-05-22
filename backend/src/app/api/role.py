@@ -7,7 +7,7 @@ from flask_jwt_extended import jwt_required
 from src.utils import pagination
 from src.app.db.model import RolesModel
 from src.app.schema.serializer import role_post_request, role
-from src.app.schema.request_schema import (
+from src.app.schema.validation_schema import (
     RoleParamRequestSchema,
     RolePostRequestSchema,
     RolePutRequestSchema,
