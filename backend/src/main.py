@@ -106,8 +106,8 @@ def create_app(config_name="default"):
 
     # check if token is revoked
     @jwt.token_in_blocklist_loader
-    def check_if_token_revoked(decrypted_token):
-        jti = decrypted_token["jti"]
+    def check_if_token_revoked(jwt_header, jwt_payload):
+        jti = jwt_payload["jti"]
         return models.RevokedTokenModel.is_token_blacklisted(token=jti)
 
     # CORS(app, resources={r"/api/*": {"origins": "*"}}, allow_headers="*")
