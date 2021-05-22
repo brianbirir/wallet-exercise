@@ -67,7 +67,7 @@ def create_app(config_name="default"):
     def seed_with_admin():
         try:
             super_admin = models.UserModel(
-                name="Super",
+                name="Super Admin",
                 password=models.UserModel.generate_hash(Config.DEFAULT_USER_PASSWORD),
                 role_id=1,
                 telephone="",
@@ -112,13 +112,6 @@ def create_app(config_name="default"):
 
     # CORS(app, resources={r"/api/*": {"origins": "*"}}, allow_headers="*")
     return app
-
-
-#
-# def main():
-#     app = create_app(config["default"])
-#     startup_param = {"host": "0.0.0.0", "debug": True}
-#     app.run(host='0.0.0.0')
 
 
 if __name__ == "__main__":
