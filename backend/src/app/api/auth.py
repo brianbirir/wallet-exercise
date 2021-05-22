@@ -9,7 +9,7 @@ from flask_jwt_extended import (
 )
 
 from src.app.schema.serializer import user_login_request, user_registration_request
-from src.app.schema.request_schema import (
+from src.app.schema.validation_schema import (
     UserRegistrationRequestSchema,
     UserLoginRequestSchema,
 )
