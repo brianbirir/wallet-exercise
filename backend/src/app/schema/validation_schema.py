@@ -1,4 +1,5 @@
 """ Schema for parsing & validating request data"""
+from re import L
 from marshmallow import Schema, fields
 
 
@@ -13,6 +14,7 @@ class UserRegistrationRequestSchema(Schema):
     telephone = fields.String(required=True)
     profile_photo = fields.String(required=True)
     role_id = fields.Number(required=True)
+    is_disabled = fields.Boolean(required=True)
 
 
 class UserPutRequestSchema(Schema):
@@ -44,3 +46,8 @@ class RolePutRequestSchema(Schema):
 
 class AthleteVerificationRequestSchema(Schema):
     is_verified = fields.Boolean(required=True)
+
+
+class WalletPutRequestSchema(Schema):
+    amount = fields.Float(required=True)
+    currency = fields.String(required=False)
