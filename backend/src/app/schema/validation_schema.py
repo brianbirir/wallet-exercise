@@ -50,4 +50,4 @@ class AthleteVerificationRequestSchema(Schema):
 
 class WalletPutRequestSchema(Schema):
     amount = fields.Float(required=True)
-    currency = fields.String(required=False)
+    currency_id = fields.Integer(required=False)

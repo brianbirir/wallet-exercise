@@ -82,3 +82,20 @@ wallet = api.model(
         "currency": fields.String(description="Current currency"),
     },
 )
+
+
+wallet = api.model(
+    "WalletSchema",
+    {
+        "amount": fields.Fixed(decimals=2),
+        "currency": fields.String(description="Current currency"),
+    },
+)
+
+wallet_update = api.model(
+    "WalletUpdateSchema",
+    {
+        "amount": fields.Decimal(),
+        "currency_id": fields.Integer(description="Id of currency"),
+    },
+)
