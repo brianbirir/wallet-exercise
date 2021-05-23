@@ -51,3 +51,8 @@ class AthleteVerificationRequestSchema(Schema):
 class WalletPutRequestSchema(Schema):
     amount = fields.Float(required=True)
     currency_id = fields.Integer(required=False)
+
+
+class TransferRequestSchema(Schema):
+    current_user_id = fields.Integer(required=True)
+    target_user_id = fields.Integer(required=True)

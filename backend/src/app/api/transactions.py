@@ -6,7 +6,11 @@ from flask_jwt_extended import jwt_required
 from src.app.api import user
 
 from src.app.schema.serializer import wallet, wallet_update
-from src.app.schema.validation_schema import UserRequestSchema, WalletPutRequestSchema
+from src.app.schema.validation_schema import (
+    UserRequestSchema,
+    WalletPutRequestSchema,
+    TransferRequestSchema,
+)
 from src.app.db.model import (
     UserModel,
     WalletModel,
@@ -86,8 +90,8 @@ class Wallet(Resource):
         currency_id = request_body.get("currency_id")
 
         wallet.amount = wallet.amount + Decimal(amount)
-        wallet.currency_id = currency_id
-        wallet.user_id = user_id
+        # wallet.currency_id = currency_id
+        # wallet.user_id = user_id
         wallet.save_to_db()
         return {"message": "Wallet credited successfully"}, 200
 
@@ -131,21 +135,11 @@ class Wallet(Resource):
 
         if wallet.amount >= Decimal(amount):
             wallet.amount = wallet.amount - Decimal(amount)
-            wallet.currency_id = currency_id
-            wallet.user_id = user_id
+            # wallet.currency_id = currency_id
+            # wallet.user_id = user_id
             wallet.save_to_db()
             return {"message": "Wallet debited successfully"}, 200
         return {"message": "You have insufficient funds"}, 406
-
-
-@ns_transaction.route("/credit")
-class CreditAccount(Resource):
-    pass
-
-
-@ns_transaction.route("/debit")
-class DebitAccount(Resource):
-    pass
 
 
 @ns_transaction.route("/record")
@@ -155,4 +149,64 @@ class RecordTransactions(Resource):
 
 @ns_transaction.route("/transfer")
 class TransferFunds(Resource):
-    pass
+    """Transfer resource"""
+
+    @jwt_required()
+    @ns_transaction.expect(wallet_update)
+    @ns_transaction.response(200, "Wallet credited successfully")
+    @ns_transaction.response(400, "Bad request")
+    @ns_transaction.response(404, "Wallet does not exist")
+    @ns_transaction.param("current_user_id", "ID of the user wants to transfer funds")
+    @ns_transaction.param(
+        "target_user_id", "ID of the user that receives transferred funds"
+    )
+    def put(self):
+        """Transfer money from one user to another"""
+        request_body = request.json
+
+        request_param_schema = TransferRequestSchema()
+        request_body_schema = WalletPutRequestSchema()
+
+        params_validation_errors = request_param_schema.validate(request.args)
+        body_validation_errors = request_body_schema.validate(request_body)
+
+        if params_validation_errors:
+            abort(400, str(params_validation_errors))
+
+        if body_validation_errors:
+            abort(400, str(body_validation_errors))
+
+        # query param
+        current_user_id = request.args.get("current_user_id")
+        target_user_id = request.args.get("target_user_id")
+
+        if not WalletModel.find_by_user_id(user_id=current_user_id):
+            abort(
+                404, f"Wallet for money transfer user {current_user_id} does not exist"
+            )
+
+        if not WalletModel.find_by_user_id(user_id=target_user_id):
+            abort(
+                404, f"Wallet for money receiving user {target_user_id} does not exist"
+            )
+
+        wallet_current, currency_current = WalletModel.find_by_user_id(
+            user_id=current_user_id
+        )
+
+        wallet_target, currency_target = WalletModel.find_by_user_id(
+            user_id=target_user_id
+        )
+
+        # request body
+        amount = request_body.get("amount")
+        currency_id = request_body.get("currency_id")
+
+        if wallet_current.amount >= Decimal(amount):
+            wallet_current.amount = wallet_current.amount - Decimal(amount)
+            wallet_target.amount = wallet_target.amount + Decimal(amount)
+
+            wallet_current.save_to_db()
+            wallet_target.save_to_db()
+            return {"message": "Money has been transferred successfully"}, 200
+        return {"message": "You have insufficient funds"}, 406
