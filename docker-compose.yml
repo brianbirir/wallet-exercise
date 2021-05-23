@@ -35,7 +35,7 @@ services:
     container_name: wallet_nginx
     build: ./nginx
     ports:
-      - '1337:80'
+      - '80:80'
     depends_on:
       - wallet_web_api
     networks:
